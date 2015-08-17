@@ -1,0 +1,5 @@
+local:
+ssh://git@192.168.1.188:22/home/git/dubbo-demo.git
+
+oschina:
+https://git.oschina.net/tenchael/dubbo-demo.git

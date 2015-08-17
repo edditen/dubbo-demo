@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+                        http://www.springframework.org/schema/beans/spring-beans.xsd
+                        http://www.springframework.org/schema/context
+                        http://www.springframework.org/schema/context/spring-context.xsd
+                        http://code.alibabatech.com/schema/dubbo
+                        http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+	<!-- 提供方应用信息，用于计算依赖关系 -->
+	<dubbo:application name="dubbo-provider-app" />
+	<!-- 使用multicast广播注册中心暴露服务地址 -->
+	<!-- <dubbo:registry address="zookeeper://224.5.6.7:2181" /> -->
+	<!-- 向注册中心暴露服务地址 -->
+	<dubbo:registry protocol="zookeeper"
+		address="192.168.1.60:2181,192.168.1.61:2181,192.168.1.62:2181" />
+
+	<!-- 用dubbo协议在20880端口暴露服务 -->
+	<dubbo:protocol name="dubbo" port="20880" />
+
+
+	<context:component-scan base-package="com.tenchael.dubbo.provider.dao" />
+
+	<!-- 方法一,注解:扫描注解包路径，多个包用逗号分隔，不填pacakge表示扫描当前ApplicationContext中所有的类 -->
+	<dubbo:annotation package="com.tenchael.dubbo.provider.service.impl" />
+
+	<!-- 方法二,XML配置 :声明需要暴露的服务接口 -->
+	<!-- <dubbo:service interface="com.tenchael.dubbo.api.DemoService" ref="demoService" 
+		/> -->
+	<!-- <bean id="demoService" class="com.tenchael.dubbo.provider.service.impl.DemoServiceImpl" 
+		/> -->
+
+
+	<!-- Init system properties checker - provides useful info :) -->
+	<context:property-placeholder location="classpath*:props/*.properties" />
+
+	<import resource="classpath:redis-context.xml" />
+</beans>
