@@ -10,4 +10,7 @@ public interface DemoService {
 
 	<T extends Serializable> List<T> get();
 
+	<T extends Serializable> T get2();
+
+
 }
