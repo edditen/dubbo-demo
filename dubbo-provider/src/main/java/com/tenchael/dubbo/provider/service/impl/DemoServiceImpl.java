@@ -1,14 +1,12 @@
 package com.tenchael.dubbo.provider.service.impl;
 
-import java.io.Serializable;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.alibaba.dubbo.config.annotation.Service;
 import com.tenchael.dubbo.api.DemoService;
-import com.tenchael.dubbo.bean.User;
 import com.tenchael.dubbo.provider.dao.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.io.Serializable;
+import java.util.List;
 
 @Service
 public class DemoServiceImpl implements DemoService {
@@ -22,14 +20,14 @@ public class DemoServiceImpl implements DemoService {
 
 	@Override
 	public	<T extends Serializable>  List<T> get() {
-		return (List<T>) userDao.get();
+		return null;//(List<T>) userDao.get();
 	}
 
 	@Override
 	public <T extends Serializable> void set(T user) {
-		if(user instanceof User){
+		/*if(user instanceof User){
 			userDao.set((User) user);
-		}
+		}*/
 
 	}
 }

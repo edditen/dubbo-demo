@@ -1,7 +1,6 @@
 package com.tenchael.dubbo.web.controller;
 
 import com.tenchael.dubbo.api.DemoService;
-import com.tenchael.dubbo.bean.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -9,6 +8,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -25,15 +26,16 @@ public class HomeController {
 
 	@RequestMapping(value = "user", method = RequestMethod.GET)
 	@ResponseBody
-	public List<User> getUser() {
-		return  demoService.get();
+	public List<Serializable> getUser() {
+		demoService.get();
+		return new ArrayList<>();
 	}
 
 	@RequestMapping(value = "user", method = RequestMethod.POST)
 	@ResponseBody
 	public String addUser(@RequestParam(value = "name", required = true) String name,
 			@RequestParam(value = "age", required = true) int age) {
-		demoService.set(new User(name, age));
+//		demoService.set(new User(name, age));
 		return "OK";
 	}
 }
