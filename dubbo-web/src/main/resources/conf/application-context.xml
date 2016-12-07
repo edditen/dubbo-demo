@@ -14,7 +14,7 @@
 
 	<!-- registry address, used for consumer to discover services -->
 	<dubbo:registry protocol="zookeeper"
-		address="192.168.1.60:2181,192.168.1.61:2181,192.168.1.62:2181" />
+		address="127.0.0.1:2181" />
 
 	<!-- 扫描注解包路径，多个包用逗号分隔，不填pacakge表示扫描当前ApplicationContext中所有的类 -->
 	<!-- <dubbo:annotation package="com.tenchael.dubbo.consumer" /> -->

@@ -1,5 +1,6 @@
 package com.tenchael.dubbo.api;
 
+import java.io.Serializable;
 import java.util.List;
 
 import com.tenchael.dubbo.bean.User;
@@ -7,9 +8,8 @@ import com.tenchael.dubbo.bean.User;
 public interface DemoService {
 	String sayHello(String msg);
 	
-	void setUser(User user);
+	<T extends Serializable> void set(T user);
 
-	User getUserByName(String name);
+	<T extends Serializable> List<T> get();
 
-	List<User> getUsers();
 }

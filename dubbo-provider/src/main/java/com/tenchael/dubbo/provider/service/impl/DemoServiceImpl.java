@@ -1,5 +1,6 @@
 package com.tenchael.dubbo.provider.service.impl;
 
+import java.io.Serializable;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,18 +21,15 @@ public class DemoServiceImpl implements DemoService {
 	}
 
 	@Override
-	public User getUserByName(String name) {
-		return userDao.get(name);
+	public	<T extends Serializable>  List<T> get() {
+		return (List<T>) userDao.get();
 	}
 
 	@Override
-	public List<User> getUsers() {
-		// TODO
-		return null;
-	}
+	public <T extends Serializable> void set(T user) {
+		if(user instanceof User){
+			userDao.set((User) user);
+		}
 
-	@Override
-	public void setUser(User user) {
-		userDao.set(user);
 	}
 }
