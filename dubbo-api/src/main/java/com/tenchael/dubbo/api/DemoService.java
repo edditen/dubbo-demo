@@ -3,8 +3,6 @@ package com.tenchael.dubbo.api;
 import java.io.Serializable;
 import java.util.List;
 
-import com.tenchael.dubbo.bean.User;
-
 public interface DemoService {
 	String sayHello(String msg);
 	
