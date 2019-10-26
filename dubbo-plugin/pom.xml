@@ -18,6 +18,13 @@
     <name>${module.name}</name>
     <url>http://maven.apache.org</url>
 
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.dubbo</groupId>
+            <artifactId>dubbo</artifactId>
+        </dependency>
+    </dependencies>
+
     <build>
         <finalName>${module.name}</finalName>
     </build>
