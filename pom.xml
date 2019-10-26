@@ -15,6 +15,7 @@
         <module>demo-api</module>
         <module>demo-provider</module>
         <module>demo-consumer</module>
+        <module>dubbo-plugin</module>
     </modules>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
