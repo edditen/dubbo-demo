@@ -16,6 +16,7 @@ public class Provider {
         service.setInterface(DemoService.class);
         service.setVersion("1.0.0");
         service.setRef(new DemoServiceImpl());
+        service.setFilter("jmxMetrics");
         service.export();
         System.in.read();
     }

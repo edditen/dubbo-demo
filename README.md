@@ -6,12 +6,14 @@
 
 模块划分：
 
-* dubbo-api
+* demo-api
 公用API；
-* dubbo-provider
-服务提供者，将服务注册到Zookeeper供使用；
-* dubbo-consumer
-服务消费者，先从Zookeeper取得服务的主机地址，然后消费服务。
+
+* demo-provider
+服务提供者，将服务注册到注册中心；
+
+* demo-consumer
+服务消费者，先从注册中心取得服务的主机地址，然后消费服务。
 
 
 
