@@ -5,10 +5,6 @@ import org.apache.dubbo.rpc.Invoker;
 
 public class NameUtils {
 
-    public static String shortMethodName(Invoker<?> invoker, Invocation invocation) {
-        return name(invoker.getInterface().getSimpleName(), invocation.getMethodName());
-    }
-
     public static String fullMethodName(Invoker<?> invoker, Invocation invocation) {
         return name(invoker.getInterface().getName(), invocation.getMethodName());
     }
