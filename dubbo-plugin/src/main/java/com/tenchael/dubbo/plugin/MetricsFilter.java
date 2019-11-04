@@ -2,11 +2,13 @@ package com.tenchael.dubbo.plugin;
 
 import com.tenchael.dubbo.plugin.metrics.MetricsMXRecord;
 import com.tenchael.dubbo.plugin.utils.NameUtils;
-import org.apache.dubbo.common.constants.CommonConstants;
 import org.apache.dubbo.common.extension.Activate;
 import org.apache.dubbo.rpc.*;
 
-@Activate(group = CommonConstants.PROVIDER, value = Constants.METRICS_KEY)
+import static org.apache.dubbo.common.constants.CommonConstants.CONSUMER;
+import static org.apache.dubbo.common.constants.CommonConstants.PROVIDER;
+
+@Activate(group = {CONSUMER, PROVIDER}, value = Constants.METRICS_KEY)
 public class MetricsFilter implements Filter {
 
     private final MetricsMXRecord metricsRecord;
