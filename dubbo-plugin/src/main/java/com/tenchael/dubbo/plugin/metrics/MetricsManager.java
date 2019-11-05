@@ -1,6 +1,6 @@
 package com.tenchael.dubbo.plugin.metrics;
 
-import com.tenchael.dubbo.plugin.jmx.CounterMXBean;
+import com.tenchael.dubbo.plugin.jmx.MBean;
 import com.tenchael.dubbo.plugin.jmx.MBeanRegistry;
 import org.apache.dubbo.common.logger.Logger;
 import org.apache.dubbo.common.logger.LoggerFactory;
@@ -14,8 +14,8 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class CounterRecord {
-    private static final Logger LOG = LoggerFactory.getLogger(CounterRecord.class);
+public class MetricsManager {
+    private static final Logger LOG = LoggerFactory.getLogger(MetricsManager.class);
     private final Map<String, Counter> counters;
     private final Set<ObjectName> objectNames;
     private final ReentrantLock lock = new ReentrantLock();
@@ -24,7 +24,7 @@ public class CounterRecord {
 
     private final MBeanRegistry mBeanRegistry;
 
-    public CounterRecord() {
+    public MetricsManager() {
         this.counters = new ConcurrentHashMap<>();
         this.objectNames = new HashSet<>();
         this.mBeanRegistry = MBeanRegistry.getInstance();
@@ -33,20 +33,20 @@ public class CounterRecord {
 
     public void incr(String category, String name) {
         String key = metricsKey(category, name);
-        Counter metricsBean = counters.get(key);
-        if (metricsBean == null) {
+        Counter counter = counters.get(key);
+        if (counter == null) {
             lock.lock();
             try {
-                if (metricsBean == null) {
-                    metricsBean = new Counter(category, name);
-                    counters.putIfAbsent(key, metricsBean);
-                    asyncRegister(category, metricsBean);
+                if (counter == null) {
+                    counter = new Counter(category, name);
+                    counters.putIfAbsent(key, counter);
+                    asyncRegister(counter);
                 }
             } finally {
                 lock.unlock();
             }
         }
-        metricsBean.incr();
+        counter.incr();
     }
 
     private String metricsKey(String category, String name) {
@@ -56,10 +56,10 @@ public class CounterRecord {
                 .toString();
     }
 
-    private void register(String category, CounterMXBean mxBean) {
+    private void register(MBean mBean) {
         try {
             ObjectName oname = mBeanRegistry.register(Counter.DEFAULT_ONAME_BASE,
-                    category, mxBean);
+                    mBean.getCategory(), mBean);
             this.objectNames.add(oname);
         } catch (Exception e) {
             //handle the exception, can not interrupt thread because exception
@@ -67,9 +67,9 @@ public class CounterRecord {
         }
     }
 
-    private void asyncRegister(final String metricsType, final CounterMXBean mxBean) {
+    private void asyncRegister(final MBean mBean) {
         executor.execute(() -> {
-            register(metricsType, mxBean);
+            register(mBean);
         });
     }
 

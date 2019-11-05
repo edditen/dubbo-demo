@@ -36,7 +36,7 @@ public class MBeanRegistry {
         return mBeanServer;
     }
 
-    public ObjectName register(String nameBase, String namePrefix, CounterMXBean mBean) {
+    public ObjectName register(String nameBase, String namePrefix, MBean mBean) {
         ObjectName objectName = null;
         MBeanServer mbs = getPlatformMBeanServer();
         int i = 1;

@@ -1,6 +1,6 @@
 package com.tenchael.dubbo.plugin.jmx;
 
-public interface CounterMXBean extends Metric {
+public interface CounterMXBean extends MBean {
 
     long getCount();
 

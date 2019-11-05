@@ -1,6 +1,6 @@
 package com.tenchael.dubbo.plugin.jmx;
 
-public interface Metric {
+public interface MBean {
 
     String getCategory();
 
