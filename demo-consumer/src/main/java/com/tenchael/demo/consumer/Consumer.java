@@ -6,10 +6,12 @@ import org.apache.dubbo.config.ReferenceConfig;
 import org.apache.dubbo.config.RegistryConfig;
 
 import java.io.IOException;
+import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 public class Consumer {
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, InterruptedException {
         ReferenceConfig<DemoService> reference = new ReferenceConfig<>();
         reference.setApplication(new ApplicationConfig("demo-consumer"));
         reference.setRegistry(new RegistryConfig("nacos://127.0.0.1:8848"));
@@ -20,11 +22,11 @@ public class Consumer {
         String message = service.sayHello("dubbo");
         System.out.println(message);
 
-        for (int i = 0; i < 20; i++) {
-            String echo = service.echo("welcome");
-            System.out.println(echo);
+        Random random = new Random();
+        while (true) {
+            service.echo("welcome");
+            TimeUnit.MILLISECONDS.sleep(10 + random.nextInt(100));
         }
-        System.in.read();
     }
 
 }

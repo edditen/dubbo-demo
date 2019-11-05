@@ -1,5 +1,6 @@
 package com.tenchael.dubbo.plugin.utils;
 
+import com.tenchael.dubbo.plugin.jmx.MBean;
 import org.apache.dubbo.rpc.Invocation;
 import org.apache.dubbo.rpc.Invoker;
 
@@ -31,6 +32,13 @@ public class NameUtils {
             }
             builder.append(part);
         }
+    }
+
+    public static String baseOName(MBean mBean) {
+        Class<? extends MBean> clazz = mBean.getClass();
+        String packageName = clazz.getPackage().getName();
+        String clazzName = clazz.getSimpleName();
+        return String.format("%s:type=%s,name=", packageName, clazzName);
     }
 
 }

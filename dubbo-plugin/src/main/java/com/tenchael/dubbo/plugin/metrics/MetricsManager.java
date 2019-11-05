@@ -2,6 +2,7 @@ package com.tenchael.dubbo.plugin.metrics;
 
 import com.tenchael.dubbo.plugin.jmx.MBean;
 import com.tenchael.dubbo.plugin.jmx.MBeanRegistry;
+import com.tenchael.dubbo.plugin.utils.NameUtils;
 import org.apache.dubbo.common.logger.Logger;
 import org.apache.dubbo.common.logger.LoggerFactory;
 
@@ -17,6 +18,7 @@ import java.util.concurrent.locks.ReentrantLock;
 public class MetricsManager {
     private static final Logger LOG = LoggerFactory.getLogger(MetricsManager.class);
     private final Map<String, Counter> counters;
+    private final Map<String, Histogram> histograms;
     private final Set<ObjectName> objectNames;
     private final ReentrantLock lock = new ReentrantLock();
     private final Executor executor = Executors.newSingleThreadExecutor();
@@ -26,6 +28,7 @@ public class MetricsManager {
 
     public MetricsManager() {
         this.counters = new ConcurrentHashMap<>();
+        this.histograms = new ConcurrentHashMap<>();
         this.objectNames = new HashSet<>();
         this.mBeanRegistry = MBeanRegistry.getInstance();
         this.mBeanRegistry.setSwallowedExceptionListener(e -> LOG.warn(e.getMessage()));
@@ -49,6 +52,28 @@ public class MetricsManager {
         counter.incr();
     }
 
+    public void update(String category, String name, long value) {
+        String key = metricsKey(category, name);
+        Histogram histogram = histograms.get(key);
+        if (histogram == null) {
+            lock.lock();
+            try {
+                if (histogram == null) {
+                    histogram = new Histogram(category, name);
+                    histograms.putIfAbsent(key, histogram);
+                    asyncRegister(histogram);
+                }
+            } finally {
+                lock.unlock();
+            }
+        }
+        histogram.update(value);
+    }
+
+    public void updateAtEnd(String category, String name, long begin) {
+        update(category, name, System.nanoTime() - begin);
+    }
+
     private String metricsKey(String category, String name) {
         return new StringBuilder(name)
                 .append("@")
@@ -58,7 +83,7 @@ public class MetricsManager {
 
     private void register(MBean mBean) {
         try {
-            ObjectName oname = mBeanRegistry.register(Counter.DEFAULT_ONAME_BASE,
+            ObjectName oname = mBeanRegistry.register(NameUtils.baseOName(mBean),
                     mBean.getCategory(), mBean);
             this.objectNames.add(oname);
         } catch (Exception e) {

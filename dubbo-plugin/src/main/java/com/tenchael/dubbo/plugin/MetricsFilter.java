@@ -11,9 +11,10 @@ import static org.apache.dubbo.common.constants.CommonConstants.PROVIDER;
 @Activate(group = {CONSUMER, PROVIDER}, value = Constants.METRICS_KEY)
 public class MetricsFilter implements Filter {
 
-    private static final String REQUESTS_METRICS = "requests";
-    private static final String COMPLEMENTS_METRICS = "complemented";
-    private static final String FAILED_METRICS = "failed";
+    private static final String REQUESTS_COUNTER_KEY = "requests";
+    private static final String COMPLEMENTS_COUNTER_KEY = "complemented";
+    private static final String FAILED_COUNTER_KEY = "failed";
+    private static final String HISTOGRAM_KEY = "histogram";
     private final MetricsManager metricsManager;
 
     public MetricsFilter() {
@@ -23,19 +24,20 @@ public class MetricsFilter implements Filter {
     @Override
     public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {
         String methodName = buildMethodName(invoker, invocation);
-
-        metricsManager.incr(REQUESTS_METRICS, methodName);
+        long begin = System.nanoTime();
+        metricsManager.incr(REQUESTS_COUNTER_KEY, methodName);
         try {
             Result result = invoker.invoke(invocation);
             if (result == null || result.hasException()) {
-                metricsManager.incr(FAILED_METRICS, methodName);
+                metricsManager.incr(FAILED_COUNTER_KEY, methodName);
             }
             return result;
         } catch (Exception e) {
-            metricsManager.incr(FAILED_METRICS, methodName);
+            metricsManager.incr(FAILED_COUNTER_KEY, methodName);
             throw e;
         } finally {
-            metricsManager.incr(COMPLEMENTS_METRICS, methodName);
+            metricsManager.incr(COMPLEMENTS_COUNTER_KEY, methodName);
+            metricsManager.updateAtEnd(HISTOGRAM_KEY, methodName, begin);
         }
     }
 
