@@ -19,6 +19,11 @@ public class Consumer {
         DemoService service = reference.get();
         String message = service.sayHello("dubbo");
         System.out.println(message);
+
+        for (int i = 0; i < 20; i++) {
+            String echo = service.echo("welcome");
+            System.out.println(echo);
+        }
         System.in.read();
     }
 

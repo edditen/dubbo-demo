@@ -37,14 +37,7 @@ public class MBeanRegistry {
         String base = nameBase;
         while (!registered) {
             try {
-                ObjectName objName;
-                // Skip the numeric suffix for the first pool in case there is
-                // only one so the names are cleaner.
-                if (i == 1) {
-                    objName = new ObjectName(base + namePrefix);
-                } else {
-                    objName = new ObjectName(base + namePrefix + i);
-                }
+                ObjectName objName = new ObjectName(base + namePrefix + "_" + i);
                 mbs.registerMBean(mBean, objName);
                 objectName = objName;
                 registered = true;

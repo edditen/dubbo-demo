@@ -33,16 +33,16 @@ public class MetricsMXRecord {
         this.mBeanRegistry.setSwallowedExceptionListener(e -> LOG.warn(e.getMessage()));
     }
 
-    public void incr(String metricsType, String name) {
-        String key = metricsKey(metricsType, name);
+    public void incr(String category, String name) {
+        String key = metricsKey(category, name);
         CountMetricsBean metricsBean = metricsBeans.get(key);
         if (metricsBean == null) {
             lock.lock();
             try {
                 if (metricsBean == null) {
-                    metricsBean = new CountMetricsBean(name);
+                    metricsBean = new CountMetricsBean(category, name);
                     metricsBeans.putIfAbsent(key, metricsBean);
-                    asyncRegister(metricsType, metricsBean);
+                    asyncRegister(category, metricsBean);
                 }
             } finally {
                 lock.unlock();
@@ -51,17 +51,17 @@ public class MetricsMXRecord {
         metricsBean.incr();
     }
 
-    private String metricsKey(String metricsType, String name) {
+    private String metricsKey(String category, String name) {
         return new StringBuilder(name)
                 .append("@")
-                .append(metricsType)
+                .append(category)
                 .toString();
     }
 
-    private void register(String metricsType, MetricsMXBean mxBean) {
+    private void register(String category, MetricsMXBean mxBean) {
         try {
             ObjectName oname = mBeanRegistry.register(CountMetricsBean.DEFAULT_ONAME_BASE,
-                    metricsType, mxBean);
+                    category, mxBean);
             this.objectNames.add(oname);
         } catch (Exception e) {
             //handle the exception, can not interrupt thread because exception

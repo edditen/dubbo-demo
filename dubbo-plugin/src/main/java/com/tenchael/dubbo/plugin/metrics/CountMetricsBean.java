@@ -11,13 +11,24 @@ public class CountMetricsBean implements MetricsMXBean {
 
     public static final String DEFAULT_JMX_NAME_PREFIX = "metrics";
 
+    private String category;
     private String name;
 
     private final AtomicLong count;
 
     public CountMetricsBean(String name) {
+        this(null, name);
+    }
+
+    public CountMetricsBean(String category, String name) {
+        this.category = category;
         this.name = name;
         this.count = new AtomicLong(0);
+    }
+
+    @Override
+    public String getCategory() {
+        return category;
     }
 
     @Override
@@ -33,6 +44,10 @@ public class CountMetricsBean implements MetricsMXBean {
 
     public void incr() {
         this.count.incrementAndGet();
+    }
+
+    public void incr(long delta) {
+        this.count.addAndGet(delta);
     }
 
 }
