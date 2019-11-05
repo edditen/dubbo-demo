@@ -1,11 +1,8 @@
 package com.tenchael.dubbo.plugin.jmx;
 
-public interface MetricsMXBean {
+public interface Metric {
 
     String getCategory();
 
     String getName();
-
-    long getValue();
-
 }

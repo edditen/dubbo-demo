@@ -24,12 +24,19 @@ public class MBeanRegistry {
         }
     }
 
+    public static MBeanRegistry getInstance() {
+        return instance;
+    }
+
+    public static void setInstance(MBeanRegistry instance) {
+        MBeanRegistry.instance = instance;
+    }
+
     public MBeanServer getPlatformMBeanServer() {
         return mBeanServer;
     }
 
-
-    public ObjectName register(String nameBase, String namePrefix, MetricsMXBean mBean) {
+    public ObjectName register(String nameBase, String namePrefix, CounterMXBean mBean) {
         ObjectName objectName = null;
         MBeanServer mbs = getPlatformMBeanServer();
         int i = 1;
@@ -99,14 +106,6 @@ public class MBeanRegistry {
 
     public final void setSwallowedExceptionListener(SwallowedExceptionListener swallowedExceptionListener) {
         this.swallowedExceptionListener = swallowedExceptionListener;
-    }
-
-    public static void setInstance(MBeanRegistry instance) {
-        MBeanRegistry.instance = instance;
-    }
-
-    public static MBeanRegistry getInstance() {
-        return instance;
     }
 
 

@@ -1,6 +1,6 @@
 package com.tenchael.dubbo.plugin;
 
-import com.tenchael.dubbo.plugin.metrics.MetricsMXRecord;
+import com.tenchael.dubbo.plugin.metrics.CounterRecord;
 import com.tenchael.dubbo.plugin.utils.NameUtils;
 import org.apache.dubbo.common.extension.Activate;
 import org.apache.dubbo.rpc.*;
@@ -11,32 +11,31 @@ import static org.apache.dubbo.common.constants.CommonConstants.PROVIDER;
 @Activate(group = {CONSUMER, PROVIDER}, value = Constants.METRICS_KEY)
 public class MetricsFilter implements Filter {
 
-    private final MetricsMXRecord metricsRecord;
-
     private static final String REQUESTS_METRICS = "requests";
     private static final String COMPLEMENTS_METRICS = "complemented";
     private static final String FAILED_METRICS = "failed";
+    private final CounterRecord counterRecord;
 
     public MetricsFilter() {
-        this.metricsRecord = new MetricsMXRecord();
+        this.counterRecord = new CounterRecord();
     }
 
     @Override
     public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {
         String methodName = buildMethodName(invoker, invocation);
 
-        metricsRecord.incr(REQUESTS_METRICS, methodName);
+        counterRecord.incr(REQUESTS_METRICS, methodName);
         try {
             Result result = invoker.invoke(invocation);
             if (result == null || result.hasException()) {
-                metricsRecord.incr(FAILED_METRICS, methodName);
+                counterRecord.incr(FAILED_METRICS, methodName);
             }
             return result;
         } catch (Exception e) {
-            metricsRecord.incr(FAILED_METRICS, methodName);
+            counterRecord.incr(FAILED_METRICS, methodName);
             throw e;
         } finally {
-            metricsRecord.incr(COMPLEMENTS_METRICS, methodName);
+            counterRecord.incr(COMPLEMENTS_METRICS, methodName);
         }
     }
 

@@ -1,7 +1,7 @@
 package com.tenchael.dubbo.plugin.metrics;
 
+import com.tenchael.dubbo.plugin.jmx.CounterMXBean;
 import com.tenchael.dubbo.plugin.jmx.MBeanRegistry;
-import com.tenchael.dubbo.plugin.jmx.MetricsMXBean;
 import org.apache.dubbo.common.logger.Logger;
 import org.apache.dubbo.common.logger.LoggerFactory;
 
@@ -14,20 +14,18 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class MetricsMXRecord {
-    private final Map<String, CountMetricsBean> metricsBeans;
+public class CounterRecord {
+    private static final Logger LOG = LoggerFactory.getLogger(CounterRecord.class);
+    private final Map<String, Counter> counters;
     private final Set<ObjectName> objectNames;
-
-    private static final Logger LOG = LoggerFactory.getLogger(MetricsMXRecord.class);
-
     private final ReentrantLock lock = new ReentrantLock();
     private final Executor executor = Executors.newSingleThreadExecutor();
 
 
     private final MBeanRegistry mBeanRegistry;
 
-    public MetricsMXRecord() {
-        this.metricsBeans = new ConcurrentHashMap<>();
+    public CounterRecord() {
+        this.counters = new ConcurrentHashMap<>();
         this.objectNames = new HashSet<>();
         this.mBeanRegistry = MBeanRegistry.getInstance();
         this.mBeanRegistry.setSwallowedExceptionListener(e -> LOG.warn(e.getMessage()));
@@ -35,13 +33,13 @@ public class MetricsMXRecord {
 
     public void incr(String category, String name) {
         String key = metricsKey(category, name);
-        CountMetricsBean metricsBean = metricsBeans.get(key);
+        Counter metricsBean = counters.get(key);
         if (metricsBean == null) {
             lock.lock();
             try {
                 if (metricsBean == null) {
-                    metricsBean = new CountMetricsBean(category, name);
-                    metricsBeans.putIfAbsent(key, metricsBean);
+                    metricsBean = new Counter(category, name);
+                    counters.putIfAbsent(key, metricsBean);
                     asyncRegister(category, metricsBean);
                 }
             } finally {
@@ -58,9 +56,9 @@ public class MetricsMXRecord {
                 .toString();
     }
 
-    private void register(String category, MetricsMXBean mxBean) {
+    private void register(String category, CounterMXBean mxBean) {
         try {
-            ObjectName oname = mBeanRegistry.register(CountMetricsBean.DEFAULT_ONAME_BASE,
+            ObjectName oname = mBeanRegistry.register(Counter.DEFAULT_ONAME_BASE,
                     category, mxBean);
             this.objectNames.add(oname);
         } catch (Exception e) {
@@ -69,7 +67,7 @@ public class MetricsMXRecord {
         }
     }
 
-    private void asyncRegister(final String metricsType, final MetricsMXBean mxBean) {
+    private void asyncRegister(final String metricsType, final CounterMXBean mxBean) {
         executor.execute(() -> {
             register(metricsType, mxBean);
         });
