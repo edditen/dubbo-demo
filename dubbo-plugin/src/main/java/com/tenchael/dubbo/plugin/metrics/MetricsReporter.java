@@ -17,8 +17,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class MetricsReporter {
     private static final Logger LOG = LoggerFactory.getLogger(MetricsReporter.class);
-    private final Map<String, Counter> counters;
-    private final Map<String, Histogram> histograms;
+    private final Map<String, MBean> metricBeans;
     private final Set<ObjectName> objectNames;
     private final ReentrantLock lock = new ReentrantLock();
     private final Executor executor = Executors.newFixedThreadPool(20);
@@ -27,47 +26,55 @@ public class MetricsReporter {
     private final MBeanRegistry mBeanRegistry;
 
     public MetricsReporter() {
-        this.counters = new ConcurrentHashMap<>();
-        this.histograms = new ConcurrentHashMap<>();
+        this.metricBeans = new ConcurrentHashMap<>();
         this.objectNames = new HashSet<>();
         this.mBeanRegistry = MBeanRegistry.getInstance();
         this.mBeanRegistry.setSwallowedExceptionListener(e -> LOG.warn(e.getMessage()));
     }
 
     public void incr(String category, String name) {
+        Counter counter = getMBean(category, name, Counter.class);
+        if (counter != null) {
+            counter.incr();
+        }
+    }
+
+    private <T extends MBean> T getMBean(String category, String name, Class<T> type) {
         String key = metricsKey(category, name);
-        Counter counter = counters.get(key);
-        if (counter == null) {
+        MBean mBean = metricBeans.get(key);
+        if (mBean == null) {
             lock.lock();
             try {
-                if (counter == null) {
-                    counter = new Counter(category, name);
-                    counters.putIfAbsent(key, counter);
-                    asyncRegister(counter);
+                if (mBean == null) {
+                    mBean = newMBean(category, name, type);
+                    metricBeans.putIfAbsent(key, mBean);
+                    asyncRegister(mBean);
                 }
+            } catch (Exception e) {
+                LOG.warn(e.getMessage());
+                return null;
             } finally {
                 lock.unlock();
             }
         }
-        counter.incr();
+        return (T) mBean;
+    }
+
+    private <T extends MBean> MBean newMBean(String category, String name, Class<T> type) {
+        if (type == Counter.class) {
+            return new Counter(category, name);
+        } else if (type == Histogram.class) {
+            return new Histogram(category, name);
+        } else {
+            throw new IllegalArgumentException("not support now");
+        }
     }
 
     public void update(String category, String name, long value) {
-        String key = metricsKey(category, name);
-        Histogram histogram = histograms.get(key);
-        if (histogram == null) {
-            lock.lock();
-            try {
-                if (histogram == null) {
-                    histogram = new Histogram(category, name);
-                    histograms.putIfAbsent(key, histogram);
-                    asyncRegister(histogram);
-                }
-            } finally {
-                lock.unlock();
-            }
+        Histogram histogram = getMBean(category, name, Histogram.class);
+        if (histogram != null) {
+            histogram.update(value);
         }
-        histogram.update(value);
     }
 
     public void updateAtEnd(String category, String name, long begin) {
