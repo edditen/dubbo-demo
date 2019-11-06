@@ -7,9 +7,17 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicLongArray;
 
+/**
+ * A random sampling reservoir of a stream of {@code long}s. Uses Vitter's Algorithm R to produce a
+ * statistically representative sample.
+ * <p>Copy from io.dropwizard.metrics:metrics-core</p>
+ * of com.codahale.metrics.UniformReservoir.
+ *
+ * @see <a href="https://metrics.dropwizard.io/3.1.0/getting-started">Metrics</a>
+ */
 public class UniformReservoir implements Reservoir {
 
-    private static final int DEFAULT_SIZE = 1028;
+    public static final int DEFAULT_SIZE = 1028;
     private static final int BITS_PER_LONG = 63;
     private final AtomicLong count = new AtomicLong(0);
     private final AtomicLongArray values;

@@ -146,12 +146,16 @@ public class Histogram extends AbstractMBean implements HistogramMXBean {
     }
 
     private <T> T execute(SnapshotListener listener) {
-        long now = System.currentTimeMillis();
+        long now = nowTime();
         if (Math.abs(now - latestSnapshot) > this.refreshIntervalMills) {
             this.snapshot = this.reservoir.getSnapshot();
             this.latestSnapshot = now;
         }
         return listener.onRefresh(snapshot);
+    }
+
+    private long nowTime() {
+        return System.currentTimeMillis();
     }
 
     interface SnapshotListener {

@@ -1,5 +1,12 @@
 package com.tenchael.dubbo.plugin.metrics;
 
+/**
+ * A statistical snapshot of a {@link Snapshot}.
+ * <p>Copy from io.dropwizard.metrics:metrics-core</p>
+ * of com.codahale.metrics.Reservoir.
+ *
+ * @see <a href="https://metrics.dropwizard.io/3.1.0/getting-started">Metrics</a>
+ */
 public abstract class Snapshot {
 
     /**

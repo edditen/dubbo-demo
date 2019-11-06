@@ -15,18 +15,18 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class MetricsManager {
-    private static final Logger LOG = LoggerFactory.getLogger(MetricsManager.class);
+public class MetricsReporter {
+    private static final Logger LOG = LoggerFactory.getLogger(MetricsReporter.class);
     private final Map<String, Counter> counters;
     private final Map<String, Histogram> histograms;
     private final Set<ObjectName> objectNames;
     private final ReentrantLock lock = new ReentrantLock();
-    private final Executor executor = Executors.newSingleThreadExecutor();
+    private final Executor executor = Executors.newFixedThreadPool(20);
 
 
     private final MBeanRegistry mBeanRegistry;
 
-    public MetricsManager() {
+    public MetricsReporter() {
         this.counters = new ConcurrentHashMap<>();
         this.histograms = new ConcurrentHashMap<>();
         this.objectNames = new HashSet<>();

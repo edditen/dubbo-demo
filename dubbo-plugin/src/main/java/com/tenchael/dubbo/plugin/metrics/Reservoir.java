@@ -1,5 +1,12 @@
 package com.tenchael.dubbo.plugin.metrics;
 
+/**
+ * A statistically representative reservoir of a data stream.
+ * <p>Copy from io.dropwizard.metrics:metrics-core</p>
+ * of  com.codahale.metrics.Reservoir.
+ *
+ * @see <a href="https://metrics.dropwizard.io/3.1.0/getting-started">Metrics</a>
+ */
 public interface Reservoir {
 
 

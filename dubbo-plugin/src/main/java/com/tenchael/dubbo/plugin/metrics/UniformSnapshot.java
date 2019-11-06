@@ -5,6 +5,13 @@ import java.util.Collection;
 
 import static java.lang.Math.floor;
 
+/**
+ * A statistical snapshot of a {@link UniformSnapshot}.
+ * <p>Copy from io.dropwizard.metrics:metrics-core</p>
+ * of com.codahale.metrics.UniformSnapshot.
+ *
+ * @see <a href="https://metrics.dropwizard.io/3.1.0/getting-started">Metrics</a>
+ */
 public class UniformSnapshot extends Snapshot {
 
     private final long[] values;
